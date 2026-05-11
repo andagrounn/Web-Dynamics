@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Services Dashboard — Assignment 3</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & base ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #070711;
+      color: #f1f5f9;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ── CSS variables ────────────────────────────────────────── */
+    :root {
+      --primary:   #818cf8;
+      --cyan:      #22d3ee;
+      --orange:    #fb923c;
+      --green:     #4ade80;
+      --surface:   rgba(255,255,255,0.04);
+      --border:    rgba(255,255,255,0.08);
+      --text-2:    #94a3b8;
+      --text-3:    #475569;
+      --blur:      blur(20px);
+      --radius:    16px;
+      --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* ── Scrollbar ────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #070711; }
+    ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+
+    /* ── Gradient text ────────────────────────────────────────── */
+    .grad { background: linear-gradient(135deg,var(--primary),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+
+    /* ══════════════════════════════════════════════════════════
+       NAVBAR
+    ══════════════════════════════════════════════════════════ */
+    .nav {
+      position: fixed; inset-inline: 0; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2.5rem;
+      background: rgba(7,7,17,0.85);
+      backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav__brand { display:flex; align-items:center; gap:.65rem; }
+    .nav__icon {
+      width:34px; height:34px; border-radius:9px;
+      background: linear-gradient(135deg,var(--primary),var(--cyan));
+      display:grid; place-items:center; font-size:.85rem;
+    }
+    .nav__title { font-size:.95rem; font-weight:700; letter-spacing:-.02em; }
+    .nav__title span { background:linear-gradient(135deg,var(--primary),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .nav__cta {
+      display:inline-flex; align-items:center; gap:.45rem;
+      padding:.6rem 1.4rem; border-radius:50px;
+      background:linear-gradient(135deg,var(--primary),var(--cyan));
+      color:#fff; font-weight:600; font-size:.82rem;
+      box-shadow:0 4px 20px rgba(129,140,248,.35);
+      transition:all var(--transition);
+    }
+    .nav__cta:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(129,140,248,.5); }
+
+    /* ══════════════════════════════════════════════════════════
+       HERO
+    ══════════════════════════════════════════════════════════ */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 8rem 2rem 5rem;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .hero__bg { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+    .orb {
+      position:absolute; border-radius:50%;
+      filter:blur(90px); opacity:.15;
+      animation:drift 14s ease-in-out infinite alternate;
+    }
+    .orb-1 { width:700px;height:700px;background:var(--primary);top:-20%;left:-12%; }
+    .orb-2 { width:500px;height:500px;background:var(--cyan);bottom:-15%;right:-10%;animation-delay:-5s; }
+    .orb-3 { width:320px;height:320px;background:var(--orange);top:35%;right:15%;opacity:.08;animation-delay:-9s; }
+    @keyframes drift {
+      from { transform:translate(0,0) scale(1); }
+      to   { transform:translate(40px,30px) scale(1.06); }
+    }
+    .hero__grid {
+      position:absolute;inset:0;
+      background-image:
+        linear-gradient(rgba(129,140,248,.04) 1px, transparent 1px),
+        linear-gradient(90deg,rgba(129,140,248,.04) 1px, transparent 1px);
+      background-size:60px 60px;
+      mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%);
+      -webkit-mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%);
+    }
+    .hero__content { position:relative; z-index:1; max-width:780px; }
+    .hero__badge {
+      display:inline-flex; align-items:center; gap:.5rem;
+      padding:.35rem 1rem; border-radius:50px; margin-bottom:2rem;
+      border:1px solid rgba(129,140,248,.3);
+      background:rgba(129,140,248,.08);
+      font-size:.72rem; font-weight:600; color:var(--primary);
+      letter-spacing:.1em; text-transform:uppercase;
+    }
+    .hero__badge-dot {
+      width:6px;height:6px;border-radius:50%;
+      background:var(--green);box-shadow:0 0 8px var(--green);
+      animation:blink 2s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1}50%{opacity:.3} }
+    .hero__tag {
+      display:inline-block; margin-bottom:.75rem;
+      padding:.3rem .9rem; border-radius:50px;
+      border:1px solid rgba(255,255,255,.1);
+      background:rgba(255,255,255,.04);
+      font-size:.72rem; font-weight:600; color:var(--text-2);
+      letter-spacing:.08em; text-transform:uppercase;
+    }
+    .hero__title {
+      font-size: clamp(2.8rem,7vw,5.2rem);
+      font-weight:900; letter-spacing:-.04em; line-height:1.06;
+      margin-bottom:1.25rem;
+    }
+    .hero__sub {
+      font-size:clamp(.88rem,2vw,1.05rem);
+      color:var(--text-2); line-height:1.7; margin-bottom:2.5rem;
+      max-width:600px; margin-left:auto; margin-right:auto;
+    }
+    .hero__btns { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+    .btn {
+      display:inline-flex; align-items:center; gap:.5rem;
+      border-radius:50px; font-weight:600; font-size:.9rem;
+      padding:.8rem 1.9rem; transition:all var(--transition); border:none; cursor:pointer;
+    }
+    .btn--primary {
+      background:linear-gradient(135deg,var(--primary),var(--cyan));
+      color:#fff; box-shadow:0 8px 24px rgba(129,140,248,.35);
+    }
+    .btn--primary:hover { transform:translateY(-2px); box-shadow:0 12px 32px rgba(129,140,248,.55); }
+    .btn--outline {
+      background:var(--surface); color:var(--text-2);
+      border:1px solid var(--border);
+      backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
+    }
+    .btn--outline:hover { border-color:rgba(255,255,255,.2); color:#f1f5f9; }
+
+    /* ── Tech pills ───────────────────────────────────────────── */
+    .tech-row {
+      display:flex; gap:.65rem; flex-wrap:wrap; justify-content:center;
+      margin-top:3.5rem;
+    }
+    .tech-pill {
+      display:inline-flex; align-items:center; gap:.4rem;
+      padding:.35rem .85rem; border-radius:50px;
+      border:1px solid var(--border); background:var(--surface);
+      font-size:.72rem; font-weight:500; color:var(--text-2);
+    }
+    .tech-pill i { font-size:.65rem; }
+
+    /* ══════════════════════════════════════════════════════════
+       SECTION COMMON
+    ══════════════════════════════════════════════════════════ */
+    .section { padding:6rem 2rem; }
+    .section--alt { background:rgba(0,0,0,.3); }
+    .section__inner { max-width:1100px; margin:0 auto; }
+    .section__header { text-align:center; margin-bottom:3.5rem; }
+    .section__label {
+      display:inline-flex; align-items:center; gap:.4rem;
+      padding:.3rem .85rem; border-radius:50px; margin-bottom:1rem;
+      border:1px solid rgba(129,140,248,.25);
+      background:rgba(129,140,248,.07);
+      color:var(--primary); font-size:.72rem; font-weight:600;
+      text-transform:uppercase; letter-spacing:.1em;
+    }
+    .section__title {
+      font-size:clamp(1.8rem,4vw,2.8rem); font-weight:800;
+      letter-spacing:-.03em; line-height:1.15;
+    }
+    .section__sub { color:var(--text-2); font-size:.95rem; margin-top:.6rem; }
+
+    /* ══════════════════════════════════════════════════════════
+       FEATURES GRID
+    ══════════════════════════════════════════════════════════ */
+    .features { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1.25rem; }
+    .feature-card {
+      padding:1.75rem; border-radius:var(--radius);
+      background:var(--surface); border:1px solid var(--border);
+      backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
+      transition:transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+    }
+    .feature-card:hover { transform:translateY(-5px); border-color:rgba(255,255,255,.14); box-shadow:0 16px 40px rgba(0,0,0,.4); }
+    .feature-icon {
+      width:46px; height:46px; border-radius:13px;
+      display:grid; place-items:center; font-size:1.1rem;
+      margin-bottom:1.1rem;
+    }
+    .feature-card h3 { font-size:.97rem; font-weight:700; margin-bottom:.45rem; }
+    .feature-card p { font-size:.82rem; color:var(--text-2); line-height:1.65; }
+    .feature-badge {
+      display:inline-block; margin-top:.85rem;
+      padding:.2rem .65rem; border-radius:50px;
+      font-size:.65rem; font-weight:700; letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       TEAM SECTION
+    ══════════════════════════════════════════════════════════ */
+    .team { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:1.5rem; max-width:760px; margin:0 auto; }
+    .member-card {
+      padding:2rem; border-radius:20px;
+      background:var(--surface); border:1px solid var(--border);
+      backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
+      transition:transform var(--transition), box-shadow var(--transition);
+      position:relative; overflow:hidden;
+    }
+    .member-card::before {
+      content:''; position:absolute; inset:0;
+      background:linear-gradient(135deg,var(--member-clr,rgba(129,140,248,.06)),transparent 60%);
+      pointer-events:none;
+    }
+    .member-card:hover { transform:translateY(-6px); box-shadow:0 20px 50px rgba(0,0,0,.45); }
+    .member-avatar {
+      width:64px; height:64px; border-radius:50%;
+      display:grid; place-items:center; font-size:1.6rem; font-weight:800;
+      margin-bottom:1.25rem;
+      border:2px solid rgba(255,255,255,.12);
+    }
+    .member-name { font-size:1.15rem; font-weight:700; margin-bottom:.25rem; }
+    .member-role {
+      font-size:.75rem; font-weight:600; text-transform:uppercase;
+      letter-spacing:.1em; margin-bottom:1.1rem;
+    }
+    .member-info { display:flex; flex-direction:column; gap:.55rem; }
+    .member-row {
+      display:flex; align-items:center; gap:.65rem;
+      font-size:.82rem; color:var(--text-2);
+    }
+    .member-row i { font-size:.75rem; width:14px; text-align:center; flex-shrink:0; }
+    .member-tag {
+      display:inline-block; margin-top:1.1rem;
+      padding:.3rem .85rem; border-radius:50px;
+      font-size:.68rem; font-weight:700; letter-spacing:.06em;
+      text-transform:uppercase;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       ASSIGNMENT INFO STRIP
+    ══════════════════════════════════════════════════════════ */
+    .info-strip {
+      display:flex; flex-wrap:wrap; gap:1rem; justify-content:center;
+      margin:3rem 0 0;
+    }
+    .info-chip {
+      display:flex; align-items:center; gap:.6rem;
+      padding:.75rem 1.25rem; border-radius:14px;
+      background:var(--surface); border:1px solid var(--border);
+      font-size:.82rem;
+    }
+    .info-chip i { color:var(--primary); font-size:.8rem; }
+    .info-chip strong { color:#f1f5f9; }
+    .info-chip span { color:var(--text-2); }
+
+    /* ══════════════════════════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════════════════════════ */
+    .footer {
+      border-top:1px solid var(--border);
+      padding:2.5rem 2rem;
+    }
+    .footer__inner {
+      max-width:1100px; margin:0 auto;
+      display:flex; align-items:center; justify-content:space-between;
+      flex-wrap:wrap; gap:1rem;
+    }
+    .footer__brand { display:flex; align-items:center; gap:.5rem; font-size:.9rem; font-weight:600; color:var(--text-2); }
+    .footer__brand i { color:var(--primary); }
+    .footer__copy { font-size:.78rem; color:var(--text-3); }
+
+    /* ── Responsive ───────────────────────────────────────────── */
+    @media (max-width:640px) {
+      .nav { padding:.9rem 1.25rem; }
+      .section { padding:4.5rem 1.25rem; }
+      .hero { padding:7rem 1.25rem 4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ NAVBAR ══════════════════════════════════════════════ -->
+  <nav class="nav">
+    <div class="nav__brand">
+      <div class="nav__icon"><i class="fa fa-layer-group"></i></div>
+      <div class="nav__title">Services<span>Dashboard</span></div>
+    </div>
+    <a href="index.html" class="nav__cta">
+      <i class="fa fa-rocket"></i> Launch Dashboard
+    </a>
+  </nav>
+
+  <!-- ══ HERO ════════════════════════════════════════════════ -->
+  <section class="hero">
+    <div class="hero__bg">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+      <div class="hero__grid"></div>
+    </div>
+
+    <div class="hero__content">
+      <div class="hero__badge">
+        <span class="hero__badge-dot"></span>
+        Assignment 3 &nbsp;·&nbsp; Dynamic Websites &amp; Applications
+      </div>
+
+      <div class="hero__tag">VTDI &nbsp;·&nbsp; Module 2</div>
+
+      <h1 class="hero__title">
+        Unified <span class="grad">Services</span><br/>Dashboard
+      </h1>
+
+      <p class="hero__sub">
+        A single-page web application integrating four live APIs —
+        geospatial mapping, real-time news, on-demand video, and
+        a Canvas analog clock — built with Vanilla JS, async/await,
+        and the HTML5 Canvas API.
+      </p>
+
+      <div class="hero__btns">
+        <a href="index.html" class="btn btn--primary">
+          <i class="fa fa-rocket"></i> Open Dashboard
+        </a>
+        <a href="https://github.com/andagrounn/Web-Dynamics" target="_blank" rel="noopener" class="btn btn--outline">
+          <i class="fa-brands fa-github"></i> View on GitHub
+        </a>
+      </div>
+
+      <div class="tech-row">
+        <span class="tech-pill"><i class="fa fa-map-location-dot" style="color:#818cf8"></i> MapQuest API</span>
+        <span class="tech-pill"><i class="fa fa-newspaper" style="color:#22d3ee"></i> NYTimes API</span>
+        <span class="tech-pill"><i class="fa fa-play-circle" style="color:#fb923c"></i> YouTube Data API v3</span>
+        <span class="tech-pill"><i class="fa fa-clock" style="color:#4ade80"></i> Canvas API · 60fps</span>
+        <span class="tech-pill"><i class="fa fa-bolt" style="color:#f59e0b"></i> Async / Await</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FEATURES ════════════════════════════════════════════ -->
+  <section class="section section--alt">
+    <div class="section__inner">
+      <div class="section__header">
+        <div class="section__label"><i class="fa fa-cubes"></i> Modules</div>
+        <h2 class="section__title">Four <span class="grad">Live API</span> Integrations</h2>
+        <p class="section__sub">Each module is self-contained, documented, and driven by a real third-party API</p>
+      </div>
+      <div class="features">
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(129,140,248,.15);color:#818cf8">
+            <i class="fa fa-map-location-dot"></i>
+          </div>
+          <h3>Geospatial Intelligence</h3>
+          <p>Search any location in Jamaica — Leaflet flies the map and drops an animated pin marker with a popup.</p>
+          <span class="feature-badge" style="background:rgba(129,140,248,.12);color:#818cf8">MapQuest · Leaflet · Nominatim</span>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(34,211,238,.15);color:#22d3ee">
+            <i class="fa fa-newspaper"></i>
+          </div>
+          <h3>Real-Time News Stream</h3>
+          <p>Searches the New York Times Article Search API and renders results as animated glassmorphism cards.</p>
+          <span class="feature-badge" style="background:rgba(34,211,238,.12);color:#22d3ee">NYTimes Article Search API</span>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(251,146,60,.15);color:#fb923c">
+            <i class="fa fa-play-circle"></i>
+          </div>
+          <h3>On-Demand Media Player</h3>
+          <p>Fetches the top 5 YouTube videos for any query via template literals and plays them in an embedded iframe.</p>
+          <span class="feature-badge" style="background:rgba(251,146,60,.12);color:#fb923c">YouTube Data API v3</span>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(74,222,128,.15);color:#4ade80">
+            <i class="fa fa-clock"></i>
+          </div>
+          <h3>State-Sync Analog Clock</h3>
+          <p>A 60fps analog clock drawn with Math.cos / Math.sin trigonometry. Toggles between Day and Night themes without pausing the rAF loop.</p>
+          <span class="feature-badge" style="background:rgba(74,222,128,.12);color:#4ade80">HTML5 Canvas · requestAnimationFrame</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ TEAM ════════════════════════════════════════════════ -->
+  <section class="section" id="team">
+    <div class="section__inner">
+      <div class="section__header">
+        <div class="section__label"><i class="fa fa-users"></i> Group Members</div>
+        <h2 class="section__title">Meet the <span class="grad">Team</span></h2>
+        <p class="section__sub">VTDI · Dynamic Websites &amp; Applications · Assignment 3</p>
+      </div>
+
+      <div class="team">
+
+        <!-- Member 1 -->
+        <div class="member-card" style="--member-clr:rgba(129,140,248,.08)">
+          <div class="member-avatar" style="background:linear-gradient(135deg,rgba(129,140,248,.25),rgba(34,211,238,.15));color:#818cf8">
+            RB
+          </div>
+          <div class="member-name">Rashidi Brown</div>
+          <div class="member-role" style="color:#818cf8">Developer</div>
+          <div class="member-info">
+            <div class="member-row">
+              <i class="fa fa-id-badge" style="color:#818cf8"></i>
+              <span>ID &nbsp;#1700245883</span>
+            </div>
+            <div class="member-row">
+              <i class="fa fa-envelope" style="color:#818cf8"></i>
+              <span>rashidi.jd.brown@gmail.com</span>
+            </div>
+            <div class="member-row">
+              <i class="fa fa-building-columns" style="color:#818cf8"></i>
+              <span>VTDI</span>
+            </div>
+          </div>
+          <span class="member-tag" style="background:rgba(129,140,248,.12);color:#818cf8">
+            <i class="fa fa-code"></i> &nbsp;Group Member 1
+          </span>
+        </div>
+
+        <!-- Member 2 -->
+        <div class="member-card" style="--member-clr:rgba(34,211,238,.08)">
+          <div class="member-avatar" style="background:linear-gradient(135deg,rgba(34,211,238,.25),rgba(129,140,248,.15));color:#22d3ee">
+            YC
+          </div>
+          <div class="member-name">Yonique Christian</div>
+          <div class="member-role" style="color:#22d3ee">Developer</div>
+          <div class="member-info">
+            <div class="member-row">
+              <i class="fa fa-id-badge" style="color:#22d3ee"></i>
+              <span>ID &nbsp;#TBD</span>
+            </div>
+            <div class="member-row">
+              <i class="fa fa-envelope" style="color:#22d3ee"></i>
+              <span>ychristian13j@vtdi.edu.jm</span>
+            </div>
+            <div class="member-row">
+              <i class="fa fa-building-columns" style="color:#22d3ee"></i>
+              <span>VTDI</span>
+            </div>
+          </div>
+          <span class="member-tag" style="background:rgba(34,211,238,.12);color:#22d3ee">
+            <i class="fa fa-code"></i> &nbsp;Group Member 2
+          </span>
+        </div>
+
+      </div>
+
+      <!-- Assignment info chips -->
+      <div class="info-strip">
+        <div class="info-chip">
+          <i class="fa fa-building-columns"></i>
+          <span><strong>Institution</strong> &nbsp;Vocational Training Development Institute</span>
+        </div>
+        <div class="info-chip">
+          <i class="fa fa-book-open"></i>
+          <span><strong>Module</strong> &nbsp;Dynamic Websites &amp; Applications</span>
+        </div>
+        <div class="info-chip">
+          <i class="fa fa-file-code"></i>
+          <span><strong>Assignment</strong> &nbsp;3</span>
+        </div>
+        <div class="info-chip">
+          <i class="fa-brands fa-github"></i>
+          <a href="https://github.com/andagrounn/Web-Dynamics" target="_blank" rel="noopener" style="color:var(--text-2)">
+            <strong>Repo</strong> &nbsp;andagrounn/Web-Dynamics
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══ FOOTER ══════════════════════════════════════════════ -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__brand">
+        <i class="fa fa-layer-group"></i>
+        <span>Services Dashboard</span>
+      </div>
+      <p class="footer__copy">&copy; 2026 &mdash; Rashidi Brown &amp; Yonique Christian &nbsp;·&nbsp; VTDI &nbsp;·&nbsp; Vanilla JS · Canvas API · Async/Await</p>
+    </div>
+  </footer>
+
+</body>
+</html>
