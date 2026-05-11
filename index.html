@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Services Dashboard</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+</head>
+<body>
+
+  <div class="dashboard">
+
+    <!-- ============================================================
+         SIDEBAR
+    ============================================================ -->
+    <aside class="sidebar">
+
+      <div class="sidebar__brand">
+        <div class="sidebar__brand-icon"><i class="fa fa-layer-group"></i></div>
+        <div class="sidebar__brand-text">
+          <div class="sidebar__brand-title">Services<span>Dashboard</span></div>
+          <div class="sidebar__brand-sub">Live · Real-Time Data</div>
+        </div>
+      </div>
+
+      <div class="sidebar__label">Modules</div>
+
+      <nav class="sidebar__nav">
+
+        <button class="sidebar__item" data-panel="map"
+          style="--item-clr:rgba(129,140,248,0.16);--item-accent:#818cf8;--item-glow:rgba(129,140,248,0.28)">
+          <span class="sidebar__item-icon"><i class="fa fa-map-location-dot"></i></span>
+          <span class="sidebar__item-label">Geolocation</span>
+          <span class="sidebar__item-badge">MapQuest</span>
+        </button>
+
+        <button class="sidebar__item" data-panel="news"
+          style="--item-clr:rgba(34,211,238,0.16);--item-accent:#22d3ee;--item-glow:rgba(34,211,238,0.28)">
+          <span class="sidebar__item-icon"><i class="fa fa-newspaper"></i></span>
+          <span class="sidebar__item-label">Live News</span>
+          <span class="sidebar__item-badge">NYTimes</span>
+        </button>
+
+        <button class="sidebar__item" data-panel="media"
+          style="--item-clr:rgba(251,146,60,0.16);--item-accent:#fb923c;--item-glow:rgba(251,146,60,0.28)">
+          <span class="sidebar__item-icon"><i class="fa fa-play-circle"></i></span>
+          <span class="sidebar__item-label">Media Player</span>
+          <span class="sidebar__item-badge">YouTube</span>
+        </button>
+
+        <button class="sidebar__item" data-panel="clock"
+          style="--item-clr:rgba(74,222,128,0.16);--item-accent:#4ade80;--item-glow:rgba(74,222,128,0.28)">
+          <span class="sidebar__item-icon"><i class="fa fa-clock"></i></span>
+          <span class="sidebar__item-label">Canvas Clock</span>
+          <span class="sidebar__item-badge">60fps</span>
+        </button>
+
+      </nav>
+
+      <div class="sidebar__footer">
+        <div class="sidebar__footer-text">
+          Vanilla JS · Canvas API<br/>Async/Await · 2026
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ============================================================
+         MAIN CONTENT — panels shown/hidden by dashboard.js
+    ============================================================ -->
+    <main class="dashboard__main">
+
+      <!-- ── MAP PANEL ─────────────────────────────────────────── -->
+      <div class="panel" id="panel-map">
+        <div class="panel__header">
+          <div class="panel__header-icon"
+               style="background:rgba(129,140,248,0.13);color:#818cf8">
+            <i class="fa fa-map-location-dot"></i>
+          </div>
+          <div class="panel__header-info">
+            <div class="panel__header-title">
+              Geospatial <span class="gradient-text">Intelligence</span>
+            </div>
+            <div class="panel__header-sub">
+              Search any location to fly the map and drop a live marker · MapQuest API
+            </div>
+          </div>
+        </div>
+        <div class="panel__body">
+          <div class="map-search-wrap">
+            <div class="search-bar" id="mapSearchBar">
+              <i class="fa fa-magnifying-glass search-bar__icon"></i>
+              <input type="text" id="mapSearchInput" class="search-bar__input"
+                placeholder="e.g. Kingston, Negril, Blue Mountains…" autocomplete="off" />
+              <button id="mapSearchBtn" class="search-bar__btn">
+                <i class="fa fa-location-crosshairs"></i> Search
+              </button>
+            </div>
+            <ul class="map-suggestions hidden" id="mapSuggestions" role="listbox"></ul>
+          </div>
+          <div id="mapStatus" class="map-status" aria-live="polite"></div>
+          <div id="mapContainer"></div>
+        </div>
+      </div>
+
+      <!-- ── NEWS PANEL ────────────────────────────────────────── -->
+      <div class="panel" id="panel-news">
+        <div class="panel__header">
+          <div class="panel__header-icon"
+               style="background:rgba(34,211,238,0.13);color:#22d3ee">
+            <i class="fa fa-newspaper"></i>
+          </div>
+          <div class="panel__header-info">
+            <div class="panel__header-title">
+              Real-Time <span class="gradient-text--cyan">News Stream</span>
+            </div>
+            <div class="panel__header-sub">
+              Search live articles from the New York Times with a loading spinner
+            </div>
+          </div>
+        </div>
+        <div class="panel__body">
+          <div class="search-bar">
+            <i class="fa fa-magnifying-glass search-bar__icon" style="color:#22d3ee"></i>
+            <input type="text" id="newsSearchInput" class="search-bar__input"
+              placeholder="e.g. Technology, Climate, Sports..." autocomplete="off" />
+            <button id="newsSearchBtn" class="search-bar__btn"
+              style="--btn-from:#0891b2;--btn-to:#22d3ee">
+              <i class="fa fa-search"></i> Search
+            </button>
+          </div>
+          <div id="newsSpinner" class="spinner-wrap hidden">
+            <div class="spinner"></div>
+            <span>Fetching articles…</span>
+          </div>
+          <div id="newsGrid" class="news-grid"></div>
+        </div>
+      </div>
+
+      <!-- ── MEDIA PANEL ───────────────────────────────────────── -->
+      <div class="panel" id="panel-media">
+        <div class="panel__header">
+          <div class="panel__header-icon"
+               style="background:rgba(251,146,60,0.13);color:#fb923c">
+            <i class="fa fa-play-circle"></i>
+          </div>
+          <div class="panel__header-info">
+            <div class="panel__header-title">
+              On-Demand <span class="gradient-text--orange">Media Player</span>
+            </div>
+            <div class="panel__header-sub">
+              Search a topic — top 5 results appear as thumbnails · click to play
+            </div>
+          </div>
+        </div>
+        <div class="panel__body">
+          <div class="search-bar">
+            <i class="fa fa-magnifying-glass search-bar__icon" style="color:#fb923c"></i>
+            <input type="text" id="ytSearchInput" class="search-bar__input"
+              placeholder="e.g. JavaScript Tutorial, Nature Documentary..." autocomplete="off" />
+            <button id="ytSearchBtn" class="search-bar__btn"
+              style="--btn-from:#c2410c;--btn-to:#fb923c">
+              <i class="fa fa-search"></i> Search
+            </button>
+          </div>
+          <div id="ytSpinner" class="spinner-wrap hidden">
+            <div class="spinner" style="border-top-color:#fb923c"></div>
+            <span>Loading videos…</span>
+          </div>
+          <div class="youtube-layout">
+            <div id="ytThumbnails" class="yt-thumbnails"></div>
+            <div class="yt-player-wrap">
+              <div id="ytPlaceholder" class="yt-placeholder">
+                <div class="yt-placeholder__icon"><i class="fa fa-circle-play"></i></div>
+                <p>Select a video to begin playback</p>
+              </div>
+              <iframe id="ytPlayer" class="yt-player hidden" src=""
+                title="YouTube video player" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+              </iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CLOCK PANEL ───────────────────────────────────────── -->
+      <div class="panel" id="panel-clock">
+        <div class="panel__header">
+          <div class="panel__header-icon"
+               style="background:rgba(74,222,128,0.13);color:#4ade80">
+            <i class="fa fa-clock"></i>
+          </div>
+          <div class="panel__header-info">
+            <div class="panel__header-title">
+              State-Sync <span class="gradient-text--green">Analog Clock</span>
+            </div>
+            <div class="panel__header-sub">
+              60fps · requestAnimationFrame · Math trigonometry · Day / Night state
+            </div>
+          </div>
+        </div>
+        <div class="panel__body">
+          <div class="clock-wrap">
+            <div class="clock-glow" id="clockGlow">
+              <canvas id="clockCanvas" width="400" height="400"></canvas>
+            </div>
+            <div class="clock-controls">
+              <button id="themeToggle" class="toggle-btn toggle-btn--day">
+                <i class="fa fa-sun"></i>
+                <span id="toggleLabel">Day Mode</span>
+              </button>
+              <div class="clock-digital" id="clockDigital">--:--:--</div>
+            </div>
+            <div class="clock-meta">
+              <span><i class="fa fa-microchip"></i> requestAnimationFrame</span>
+              <span><i class="fa fa-calculator"></i> Math.cos / Math.sin</span>
+              <span><i class="fa fa-palette"></i> Dual Theme State</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main><!-- /.dashboard__main -->
+  </div><!-- /.dashboard -->
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="config.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/news.js"></script>
+  <script src="js/youtube.js"></script>
+  <script src="js/clock.js"></script>
+  <script src="js/dashboard.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,5 @@
+# API keys — never commit real credentials
+config.js
+
+# macOS
+.DS_Store

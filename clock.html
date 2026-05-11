@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Canvas Clock — Services Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav scrolled" id="mainNav">
+    <div class="nav__brand">
+      <a href="index.html" style="display:flex;align-items:center;gap:0.75rem;text-decoration:none;color:inherit">
+        <div class="nav__icon"><i class="fa fa-layer-group"></i></div>
+        <span class="nav__title">Services<span class="nav__title--accent">Dashboard</span></span>
+      </a>
+    </div>
+    <ul class="nav__links">
+      <li><a href="map.html"><i class="fa fa-map-location-dot"></i> Map</a></li>
+      <li><a href="news.html"><i class="fa fa-newspaper"></i> News</a></li>
+      <li><a href="youtube.html"><i class="fa fa-play-circle"></i> Media</a></li>
+      <li><a href="clock.html" class="nav__active"><i class="fa fa-clock"></i> Clock</a></li>
+    </ul>
+    <div class="nav__hamburger" id="navHamburger"><span></span><span></span><span></span></div>
+  </nav>
+
+  <!-- PAGE HERO -->
+  <div class="page-hero" style="--page-clr:#4ade80">
+    <div class="page-hero__bg" style="--orb-clr:rgba(74,222,128,0.12)"></div>
+    <div class="page-hero__content">
+      <div class="section__tag" style="--tag-clr:#4ade80">
+        <i class="fa fa-clock"></i> Part 2 · Canvas API
+      </div>
+      <h1 class="page-hero__title">State-Sync <span class="gradient-text--green">Analog Clock</span></h1>
+      <p class="page-hero__sub">60fps · requestAnimationFrame · Math trigonometry · Day / Night state</p>
+    </div>
+  </div>
+
+  <!-- CLOCK SECTION -->
+  <section class="section section--dark">
+    <div class="section__inner">
+      <div class="clock-wrap">
+        <div class="clock-glow" id="clockGlow">
+          <canvas id="clockCanvas" width="400" height="400"></canvas>
+        </div>
+        <div class="clock-controls">
+          <button id="themeToggle" class="toggle-btn toggle-btn--day">
+            <i class="fa fa-sun"></i>
+            <span id="toggleLabel">Day Mode</span>
+          </button>
+          <div class="clock-digital" id="clockDigital">--:--:--</div>
+        </div>
+        <div class="clock-meta">
+          <span><i class="fa fa-microchip"></i> requestAnimationFrame</span>
+          <span><i class="fa fa-calculator"></i> Math.cos / Math.sin</span>
+          <span><i class="fa fa-palette"></i> Dual Theme State</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__brand"><i class="fa fa-layer-group"></i> <span>Services Dashboard</span></div>
+      <p class="footer__copy">&copy; 2026 &mdash; HTML5 Canvas API · requestAnimationFrame</p>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="js/clock.js"></script>
+  <script>
+    document.getElementById('navHamburger').addEventListener('click', function () {
+      document.querySelector('.nav__links').classList.toggle('open');
+      this.classList.toggle('active');
+    });
+  </script>
+</body>
+</html>
